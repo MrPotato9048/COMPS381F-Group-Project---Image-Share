@@ -1,0 +1,22 @@
+<html>
+    <title>
+        Image Share - Register
+    </title>
+    <link rel = "stylesheet" type = "text/css" href = "style.css"/>
+    <body id = "backgroundImage">
+        <div class = "container">
+            <div id = "login">
+                <h2 text-align = "center">Register</h2>
+                <form id = "loginForm" method = "POST" action = "/register">
+                    <input type = "text" class = "loginInput" placeholder = "Enter your username" name = "name" required title = "No space" pattern = "^\S+$"><br>
+
+                    <input type = "password" class = "loginInput" placeholder = "Enter your assword" name = "password" required title = "At least 8 characters" pattern = ".{8,}"><br>
+
+                    <input type = "password" class = "loginInput" placeholder = "Re-enter your password" name = "rePassword" required><br>
+
+                    <button type = "submit" class = "loginButton">Register</button><br>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

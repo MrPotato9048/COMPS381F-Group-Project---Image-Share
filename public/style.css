@@ -1,0 +1,120 @@
+h1 {
+    font-family: Helvetica, sans-serif;
+}
+
+h2 {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#date {
+    color: darkgray;
+    text-align: "right";
+}
+
+/* login.ejs */
+#backgroundImage {
+    background-image: url('image/background.jpg');
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.loginButton {
+    background-color: #515671;
+    border: none;
+    border-radius: 3px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    color: white;
+    cursor: pointer;
+    margin: 15px auto 15px;
+    padding: 10px 20px;
+    transition: background-color 600ms;
+}
+
+.loginButton:hover {
+    background-color: #717691;
+}
+
+#login {
+    background-color: white;
+    border: solid #c4972f;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    padding: 45px;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-sizing: border-box;
+}
+
+.loginInput {
+    display: block;
+    margin: 12px;
+    padding: 9px 18px;
+    border-radius: 3px;
+    border: 1px solid lightgrey;
+    transition: border-color 150ms, box-shadow 150ms;
+}
+
+.loginInput:focus {
+    outline: none;
+    border-color: lightskyblue;
+    box-shadow: 0 0 0 3px lightblue;
+}
+
+/* navigation */
+.navigation {
+    background-color: #515671;
+    overflow: hidden;
+}
+
+.navigation a {
+    color: white;
+    float: left;
+    padding: 12px 15px;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 600ms;
+}
+
+.navigation a:hover {
+    background-color: #717691;
+}
+
+/* index image */
+.imagePost img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+}
+
+.commentTable {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.commentTable th {
+    text-align: left;
+    padding: 10px 5% 10px;
+}
+
+.commentTable td {
+    border: 1px solid lightgray;
+    padding: 10px 0 10px;
+}
+
+#commentUser {
+    width: 10%;
+}
+
+#comment {
+    width: 90%;
+}

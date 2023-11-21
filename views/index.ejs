@@ -1,0 +1,46 @@
+<html>
+    <title>
+        Image Share - Home
+    </title>
+    <link rel = "stylesheet" type = "text/css" href = "style.css"/>
+    <body>
+        <h1>Image Share</h1>
+        <nav>
+            <div class = "navigation">
+                <a href = "/">Home</a>
+                <a href = "/search">Search</a>
+                <a href = "/logout" style = "float: right">Logout</a>
+            </div>
+        </nav>
+        <h2>Welcome, <%= name %></h2>
+        <% if (!userPost || userPost.length == 0) {%> <!-- Render when user has no posts -->
+            <h3>You have no post yet!</h3><br>
+            <p>Click here to create a post.</p>
+        <% } else { %>
+            <h3>Your latest post:</h3>
+            Click <a href = "/post/<%= userPost._id %>">here</a> to read the full post. <!-- direct to the latest post with its objectid -->
+            <table class = "imagePost">
+                <tr>
+                    <td id = "date">Date: <%= userPost.date %></td>
+                </tr>
+                <tr>
+                    <td><img src = "data:image/jpeg; base64, <%= userPost.image %>" /></td>
+                </tr>
+            </table>
+            <table class = "commentTable">
+                <tr>
+                    <th colspan = "2">Like: <%= postLike.length %></th>
+                </tr>
+                <tr>
+                    <th style = "padding: 0" colspan = "2">Comments:</th>
+                </tr>
+                <% for (var i = 0; i < 2; i++) { %>
+                    <tr>
+                        <td id = "commentUser"><%= postComment[i][0] %></td>
+                        <td id = "comment"><%= postComment[i][1]%></td>
+                    </tr>
+                <% }; %>
+            </table>
+        <% } %>
+    </body>
+</html>
