@@ -107,22 +107,22 @@ app.get('/post/:pID', async (req, res) => {
 
 /* like */
 app.post('/like', async (req, res) => {
-    const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
+    // const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
     const likePost = await postCollection.findOne({_id: new ObjectId(req.session.postID), like: {$elemMatch: {value: req.session.username}}});
     if (likePost) {
         await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
     } else {
         await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {like: req.session.username}});
     }
-    res.redirect(originalURL);
+    res.redirect('/post/${req.session.postID}');
 });
 
 /* comment */
 app.post('/comment', async (req, res) => {
-    const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
+    // const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
     const comment = [req.session.username, req.body.commentText];
     await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {comment: comment}});
-    res.redirect(originalURL);
+    res.redirect('/post/${req.session.postID}');
 });
 
 /* Other functions go here */
