@@ -14,6 +14,11 @@ const db = client.db(dbName);
 const userCollection = db.collection('user');
 const postCollection = db.collection('post');
 
+/* for file upload */
+const fs = require('fs');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
+
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
@@ -33,7 +38,7 @@ app.get('/', async (req, res) => {
     if (!req.session.authenticated){
         res.redirect('/login');
     } else {
-        const userPost = await postCollection.aggregate([{$match: {user: req.session.username}}, {$sort: {date: -1}}]).toArray(); // retrieve post by user from database
+        const userPost = await postCollection.aggregate([{$match: {username: req.session.username}}, {$sort: {date: -1}}]).toArray(); // retrieve post by user from database
         var postLike = null; // initiale value in case user has no posts
         var postComment = null;
         req.session.postID = null;
@@ -104,27 +109,68 @@ app.get('/post/:pID', async (req, res) => {
     const postComment = post[0].comment;
     res.status(200).render('post', {post: post[0], postLike: postLike, postComment: postComment});
 });
-
 /* like */
 app.post('/like', async (req, res) => {
-    // const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
-    const likePost = await postCollection.findOne({_id: new ObjectId(req.session.postID), like: {$elemMatch: {value: req.session.username}}});
-    if (likePost) {
-        await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
+    const likePost = await postCollection.findOne({_id: new ObjectId(req.session.postID)});
+    if (likePost.like.includes(req.session.username)) {
+        postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
     } else {
-        await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {like: req.session.username}});
+        postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {like: req.session.username}});
     }
-    res.redirect('/post/${req.session.postID}');
+    res.redirect('/');
 });
-
 /* comment */
 app.post('/comment', async (req, res) => {
-    // const originalURL = req.originalUrl; // to be change to /post/${req.session.postID}
     const comment = [req.session.username, req.body.commentText];
     await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {comment: comment}});
-    res.redirect('/post/${req.session.postID}');
+    res.redirect('/');
 });
 
+
+/* create */
+app.get('/create', (req, res) => {
+    res.render('create', { name: req.session.username, msg: '' });
+    });
+    
+app.post('/create', (req, res) => {
+    if (!req.files || Object.keys(req.files).length === 0) {
+    // No file selected
+        res.render('create', { name: req.session.username, msg: 'Error: No File Selected!' });
+    } else {
+        const photo = req.files.photo;
+        
+        const photoData = {
+            username: req.session.username,
+            filename: photo.name,
+            size: photo.size,
+            date: new Date(),
+            data: new Buffer.from(photo.data).toString('base64'),
+            like: [],
+            comment: []
+        };
+
+        postCollection.insertOne(photoData, (err, result) => {
+            if (err) {
+                console.log(err);
+                res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!' });
+            } else {
+                res.render('create', { name: req.session.username, msg: 'File uploaded succesfully!' });
+            }
+        });
+    }
+});
+
+
+/* search */
+app.get('/search', async (req, res) => {
+    const postList = await postCollection.find({}).toArray();
+    res.status(200).render('search', {postList: postList});
+});
+app.post('/search', async (req, res) => {
+    const postList = await postCollection.find({username: req.body.author}).toArray();
+    const searched = req.body.author;
+    res.status(200).render('search', {postList: postList});
+});
 /* Other functions go here */
 
 app.listen(process.env.PORT || 8080);

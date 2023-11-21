@@ -8,7 +8,9 @@
         "ejs": "*",
         "body-parser": "*",
         "cookie-session": "*",
-        "mongodb": "*"
+        "mongodb": "*",
+        "express-fileupload": "*",
+	    "nodemon": "3.0.1"
     },
     "engine": "node >= 16.20.1",
     "scripts": {

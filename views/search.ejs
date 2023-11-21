@@ -2,16 +2,83 @@
     <title>
         Image Share - Search
     </title>
-    <link rel = "stylesheet" type = "text/css" href = "style.css"/>
+    <style>
+        h1 {
+            font-family: Helvetica, sans-serif;
+        }
+
+        h2 {
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* navigation */
+        .navigation {
+            background-color: #515671;
+            overflow: hidden;
+        }
+
+        .navigation a {
+            color: white;
+            float: left;
+            padding: 12px 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 600ms;
+        }
+
+        .navigation a:hover {
+            background-color: #717691;
+        }
+
+        /* Search */
+        .searchBar {
+            background-color: lightgray;
+            overflow: hidden;
+        }
+
+        .searchContent {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-gap: 10px;
+        }
+
+        .imageItem img {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+    </style>
     <body>
         <h1>Image Share</h1>
         <nav>
             <div class = "navigation">
                 <a href = "/">Home</a>
+                <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
-        
+        <div class = "searchBar">
+            <form id = "searching" method = "POST" action = "/search">
+                <label name = "searchTitle">Search poster:</label>
+                <input type = "text" name = "author">
+                <input type = "submit" value = "search"><br>
+            </form>
+        </div>
+        <div class = "searchContent">
+            <% for (var i = 0; i <= 4; i++) { %>
+                <div class = "imageItem">
+                    <% if (postList.length > 0) { %>
+                        <% var post = postList.shift(); %>
+                        <a href = "/post/<%= post._id %>"><img src = "data:image/jpeg; base64, <%= post.data %>"  /></a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>        
     </body>
 </html>

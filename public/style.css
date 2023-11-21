@@ -13,7 +13,7 @@ body {
 
 #date {
     color: darkgray;
-    text-align: "right";
+    text-align: right;
 }
 
 /* login.ejs */
@@ -88,12 +88,21 @@ body {
     background-color: #717691;
 }
 
-/* index image */
+/* index/post image */
 .imagePost img {
     display: block;
     margin-left: auto;
     margin-right: auto;
     width: 80%;
+}
+
+#imageData {
+    width: 100%
+}
+
+#title {
+    font-style: italic;
+    font-weight: bold;
 }
 
 .commentTable {
@@ -117,4 +126,22 @@ body {
 
 #comment {
     width: 90%;
+}
+
+/* Search */
+.searchBar {
+    background-color: lightgray;
+    overflow: hidden;
+}
+
+.searchContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-gap: 10px;
+}
+
+.imageItem img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
 }

@@ -69,16 +69,17 @@
         <nav>
             <div class = "navigation">
                 <a href = "/">Home</a>
+                <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
         <table class = "imagePost">
             <tr>
-                <td id = "date">Date: <%= post.date %></td>
+                <td>Poster: <%= post.username %></td><td id = "date">Date: <%= post.date %></td>
             </tr>
             <tr>
-                <td><img src = "data:image/jpeg; base64, <%= post.image %>" /></td>
+                <td id = "imageData" colspan = "2"><img src = "data:image/jpeg; base64, <%= post.data %>" /></td>
             </tr>
         </table>
         <table class = "commentTable">
@@ -90,14 +91,20 @@
                 </th>
             </tr>
             <tr>
-                <th style = "padding: 0" colspan = "2">Comments:</th>
+                <th style = "padding: 0" colspan = "2">Comments (<%= postComment.length %>):</th>
             </tr>
-            <% for (var i = 0; i < postComment.length; i++) { %>
+            <% if (postComment && postComment.length > 0) {%>
+                <% for (var i = 0; i < postComment.length; i++) { %>
+                    <tr>
+                        <td id = "commentUser"><%= postComment[i][0] %></td>
+                        <td id = "comment"><%= postComment[i][1]%></td>
+                    </tr>
+                <% }; %>
+            <% } else { %>
                 <tr>
-                    <td id = "commentUser"><%= postComment[i][0] %></td>
-                    <td id = "comment"><%= postComment[i][1]%></td>
+                    <td colspan = "2">No comments yet.</td>
                 </tr>
-            <% }; %>
+            <% } %>
         </table>
         <table class = "commentField">
             <tr>

@@ -1,5 +1,5 @@
 # Image Share
-Server-side app for sharing image with the implementation of MongoDB.<br/>
+Server-side app for sharing image with the implementation of MongoDB.<br>
 Use this link to run: https://localhost:8080
 ## Login/logout
 Default users (username/password):
@@ -11,9 +11,14 @@ Register is available with the following constraints:
 - Certain format requirement for password (at least 8 characters)
 - Password and re-entered password should be identical
 ## Post
-A full page for viewing a post by a user.<br/>
-User can view their latest post in index, while a link to create posts will be rendered to users without any posts.<br/>
-In default, the user developer has a post.<br/>
+A full page for viewing a post by a user.<br>
+User can view their latest post in index, while a link to create posts will be rendered to users without any posts.<br>
+In default, the user developer has a post.<br>
 Function within a post (not implemented yet):
 - Like
 - Posting a comment
+## Create/upload
+User can upload an image to the database.<br>
+There are multiple error handlings:
+- No files being upload
+- File failed to be uploaded to the database
