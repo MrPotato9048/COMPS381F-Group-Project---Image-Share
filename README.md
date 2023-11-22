@@ -1,6 +1,6 @@
 # Image Share
 Server-side app for sharing image with the implementation of MongoDB.<br>
-Use this link to run: https://localhost:8080
+Use this link to test after running: https://localhost:8080
 ## Login/logout
 Default users (username/password):
 - Developer: (developer/developer)
@@ -31,4 +31,5 @@ Content:
 - User's name
 - User's description
 - User's latest post (if any)
+
 User can edit their username and/or description, as well as delete their account. (not implemented)
