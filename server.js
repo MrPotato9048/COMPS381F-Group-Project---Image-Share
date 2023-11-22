@@ -104,6 +104,19 @@ app.get('/profile/:username', async (req, res) => {
     }
     res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0]});
 });
+/* edit profile */
+app.get('/profile/:username/edit', async (req, res) => {
+    const user = await userCollection.find({username: req.params.username}).toArray();
+    res.status(200).render('editProfile', {name: req.session.username, user: user[0]});
+})
+/* delete profile */
+app.get('/profile/:username/delete', (req, res) => {
+    userCollection.deleteOne({username: req.params.username}, (err,result) => {
+        if(err) throw err
+        res.send('user is deleted');
+    });
+    res.redirect('/logout');
+});
 
 
 /* post */
