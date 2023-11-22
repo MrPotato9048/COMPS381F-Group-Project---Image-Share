@@ -103,7 +103,11 @@
             </tr>
             <% if (currentUser == post.username) { %>
                 <tr>
-                    <td colspan = "2" id = "deletePost"><a href = "/post/delete/<%= post._id %>">Delete</a></td>
+                    <td colspan = "2" id = "deletePost">
+                        <form action = "/post/<%= post._id %>?method=DELETE" method = "POST">
+                            <button type = "submit">Delete</button>
+                        </form>
+                    </td>
                 </tr>
             <% } %>
             <tr>
@@ -113,7 +117,7 @@
         <table class = "commentTable">
             <tr>
                 <th colspan = "2">
-                    <form method = "POST" action = "/like">
+                    <form method = "POST" action = "/post/<%= post._id %>/like?method=PUT">
                         <button type = "submit" name = "like" value = "like">Like</button>: <%= postLike.length %>
                     </form>
                 </th>
@@ -136,7 +140,7 @@
         </table>
         <table class = "commentField">
             <tr>
-                <form method = "POST" action = "/comment">
+                <form method = "POST" action = "/post/<%= post._id %>/comment?method=PUT">
                     <textarea id = "commentBox" name = "commentText" required></textarea><br/>
                     <button type = "submit" name = "postComment" value = "comment">Comment</button>
                 </form>

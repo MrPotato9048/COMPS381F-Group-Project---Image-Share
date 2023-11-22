@@ -23,8 +23,16 @@ app.use(fileUpload());
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
+app.use((req, res, next) => {
+    if (req.query.method == "PUT"){
+        req.method = "PUT"
+    } else if (req.query.method == "DELETE") {
+        req.method = "DELETE"
+    }
+    next();
+});
 
-/* login/logout/register */
+
 const SECRETKEY = 'testing_secret_key';
 
 app.use(session({
@@ -34,6 +42,8 @@ app.use(session({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+/* index */
 app.get('/', async (req, res) => {
     console.log(req.session);
     if (!req.session.authenticated){
@@ -42,7 +52,6 @@ app.get('/', async (req, res) => {
         const userPost = await postCollection.aggregate([{$match: {username: req.session.username}}, {$sort: {date: -1}}]).toArray(); // retrieve post by user from database
         var postLike = null; // initiale value in case user has no posts
         var postComment = null;
-        req.session.postID = null;
         if (userPost.length > 0) { // check if user has post(s)
             postLike = userPost[0].like; // retrieve like array from post
             postComment = userPost[0].comment;
@@ -51,10 +60,11 @@ app.get('/', async (req, res) => {
     }
 });
 
+
+/* login/logout/register */
 app.get('/login', (req, res) => {
     res.status(200).render('login', {});
 });
-
 app.post('/login', async (req, res) => {
     const userLogin = await userCollection.find({}).toArray();
     userLogin.forEach((user) => {
@@ -65,16 +75,13 @@ app.post('/login', async (req, res) => {
     });
     res.redirect('/');
 });
-
 app.get('/logout', (req, res) => {
     req.session = null;
     res.redirect('/');
 });
-
 app.get('/register', (req, res) => {
     res.status(200).render('register');
 });
-
 app.post('/register', async (req, res) => {
     let registerFail = false;
     const userRegister = await userCollection.find({}).toArray();
@@ -104,13 +111,16 @@ app.get('/profile/:username', async (req, res) => {
     }
     res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0]});
 });
-/* edit profile */
-app.get('/profile/:username/edit', async (req, res) => {
+/* edit profile (not finished) */
+app.get('/profile/:username/edit', (req, res) => {
+    res.status(200).render('editProfile', {name: req.session.username});
+});
+app.put('/profile/:usermame', async (req, res) => {
     const user = await userCollection.find({username: req.params.username}).toArray();
-    res.status(200).render('editProfile', {name: req.session.username, user: user[0]});
-})
+    res.redirect(`/profile/${req.session.username}`);
+});
 /* delete profile */
-app.get('/profile/:username/delete', (req, res) => {
+app.delete('/profile/:username', (req, res) => {
     userCollection.deleteOne({username: req.params.username}, (err,result) => {
         if(err) throw err
         res.send('user is deleted');
@@ -126,37 +136,43 @@ app.get('/post/:pID', async (req, res) => {
         res.status(404).send('Post not found');
         return;
     }
-    req.session.postID = req.params.pID;
-    const postLike = post[0].like;
-    const postComment = post[0].comment;
-    res.status(200).render('post', {post: post[0], postLike: postLike, postComment: postComment, currentUser: req.session.username});
+    res.status(200).render('post', {post: post[0], postLike: post[0].like, postComment: post[0].comment, currentUser: req.session.username});
 });
 /* like */
-app.post('/like', async (req, res) => {
-    const likePost = await postCollection.findOne({_id: new ObjectId(req.session.postID)});
+app.put('/post/:pID/like', async (req, res) => {
+    const likePost = await postCollection.findOne({_id: new ObjectId(req.params.pID)});
     if (likePost.like.includes(req.session.username)) {
-        postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
+        postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
     } else {
-        postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {like: req.session.username}});
+        postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$push: {like: req.session.username}});
     }
-    res.redirect(`/post/${req.session.postID}`);
+    res.redirect(`/post/${req.params.pID}`);
 });
 /* comment */
-app.post('/comment', async (req, res) => {
+app.put('/post/:pID/comment', async (req, res) => {
     const comment = [req.session.username, req.body.commentText];
-    await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {comment: comment}});
-    res.redirect(`/post/${req.session.postID}`);
+    await postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$push: {comment: comment}});
+    res.redirect(`/post/${req.params.pID}`);
 });
+/* delete post */
+app.delete('/post/:pID', (req, res) => {
+    postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err,result) => {
+        if(err) throw err
+        res.send('photo is deleted');
+    });
+    res.redirect('/search');
+});
+
 
 
 /* create */
 app.get('/create', (req, res) => {
     res.render('create', { name: req.session.username, msg: '' });
-    });
+});
     
 app.post('/create', (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
-    // No file selected
+        // No file selected
         res.render('create', { name: req.session.username, msg: 'Error: No File Selected!' });
     } else {
         const photo = req.files.photo;
@@ -176,7 +192,7 @@ app.post('/create', (req, res) => {
                 console.log(err);
                 res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!' });
             } else {
-                res.render('create', { name: req.session.username, msg: 'File uploaded succesfully!' });
+                res.redirect('/search');
             }
         });
     }
@@ -197,16 +213,5 @@ app.post('/search', (req, res) => {
     res.redirect(`/search/${searched}`);
 });
 
-
-/* Delete */
-app.get('/post/delete/:pID', (req, res) => {
-    postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err,result) => {
-        if(err) throw err
-        res.send('photo is deleted');
-    });
-    res.redirect('/search');
-});
-
-/* Other functions go here */
 
 app.listen(process.env.PORT || 8080);

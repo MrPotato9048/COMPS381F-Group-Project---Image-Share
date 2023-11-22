@@ -1,6 +1,6 @@
 <html>
     <title>
-        Image Share - <%= user.username %>'s Profile
+        Image Share - <%= name %>'s Profile
     </title>
     <style>
         h1 {
@@ -96,10 +96,10 @@
             </div>
         </nav>
         <h2>Edit profile</h2>
-        <form method = "POST" action = "/profile/<%= name %>/edit">
+        <form method = "POST" action = "/profile/<%= name %>">
             
         </form>
-        <form method = "GET" action = "/profile/<%= name %>/delete">
+        <form method = "POST" action = "/profile/<%= name %>?method=DELETE">
             <button type = "submit">Delete</button>
         </form>
     </body>
