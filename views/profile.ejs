@@ -1,0 +1,140 @@
+<html>
+    <title>
+        Image Share - <%= user.username %>'s Profile
+    </title>
+    <style>
+        h1 {
+            font-family: Helvetica, sans-serif;
+        }
+
+        h2 {
+            margin-top: 12px;
+            margin-bottom: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #date {
+            color: darkgray;
+            text-align: right;
+        }
+
+        /* navigation */
+        .navigation {
+            background-color: #515671;
+            overflow: hidden;
+        }
+
+        .navigation a {
+            color: white;
+            float: left;
+            padding: 12px 15px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 600ms;
+        }
+
+        .navigation a:hover {
+            background-color: #717691;
+        }
+
+        /* index/post image */
+        .imagePost {
+            width: 100%;
+        }
+        .imagePost img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+        }
+
+        #title {
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .commentTable {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .commentTable th {
+            text-align: left;
+            padding: 10px 5% 10px;
+        }
+
+        .commentTable td {
+            border: 1px solid lightgray;
+            padding: 10px 10px 10px;
+        }
+
+        #commentUser {
+            width: 10%;
+        }
+
+        #comment {
+            width: 90%;
+        }
+
+        #userDesc {
+            font-style: italic;
+            font-weight: bold;
+        }
+    </style>
+    <body>
+        <h1>Image Share</h1>
+        <nav>
+            <div class = "navigation">
+                <a href = "/">Home</a>
+                <a href = "/create">Upload</a>
+                <a href = "/search">Search</a>
+                <a href = "/profile/<%= name %>">Profile</a>
+                <a href = "/logout" style = "float: right">Logout</a>
+            </div>
+        </nav>
+        <h2><%= user.username %>'s Profile</h2>
+        <% if (user.desc == null) { %>
+            <h3 id = "userDesc" style = "color:darkgray">I wonder who this person is...</h3>
+        <% } else { %>
+            <h3 id = "userDesc">"<%= user.desc %>"</h3>
+        <% } %>
+        <br>
+        <% if (!userPost || userPost.length == 0) {%> <!-- Render when user has no posts -->
+            <h3><%= user.username%> has not post anything! What a bummer!</h3>
+        <% } else { %>
+            <h3><%= user.username %>'s latest post:</h3>
+            Click <a href = "/post/<%= userPost._id %>">here</a> to read the full post. <!-- direct to the latest post with its objectid -->
+            <table class = "imagePost">
+                <tr>
+                    <td id = "date">Date: <%= userPost.date %></td>
+                </tr>
+                <tr>
+                    <td id = "imgData"><img src = "data:image/jpeg; base64, <%= userPost.data %>" /></td>
+                </tr>
+            </table>
+            <table class = "commentTable">
+                <tr>
+                    <th colspan = "2">Like: <%= postLike.length %></th>
+                </tr>
+                <tr>
+                    <th style = "padding: 0" colspan = "2">Comments (<%= postComment.length %>):</th>
+                </tr>
+                <% if (postComment && postComment.length > 0) {%>
+                    <% for (var i = 0; i < 2 && i < postComment.length; i++) { %>
+                        <tr>
+                            <td id = "commentUser"><%= postComment[i][0] %></td>
+                            <td id = "comment"><%= postComment[i][1]%></td>
+                        </tr>
+                    <% }; %>
+                <% } else { %>
+                    <tr>
+                        <td colspan = "2">No comments yet.</td>
+                    </tr>
+                <% } %>
+            </table>
+        <% } %>
+    </body>
+</html>

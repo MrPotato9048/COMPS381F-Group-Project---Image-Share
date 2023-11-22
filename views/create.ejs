@@ -10,10 +10,10 @@
                 <a href = "/">Home</a>
                 <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
+                <a href = "/profile/<%= name %>">Profile</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
-	    <form action="/create" method="POST" enctype="multipart/form-data">
                   
             <% if (msg) { %>
                 <% if (msg.startsWith('Error')) { %>

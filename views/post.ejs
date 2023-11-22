@@ -13,7 +13,7 @@
 
         #date {
             color: darkgray;
-            text-align: "right";
+            text-align: right;
         }
 
         .navigation {
@@ -34,11 +34,19 @@
             background-color: #717691;
         }
 
+        .imagePost {
+            width: 100%;
+        }
+
         .imagePost img {
             display: block;
             margin-left: auto;
             margin-right: auto;
             width: 80%;
+        }
+
+        #deletePost {
+            text-align: right;
         }
 
         .commentTable {
@@ -53,15 +61,28 @@
 
         .commentTable td {
             border: 1px solid lightgray;
-            padding: 10px 0 10px;
+            padding: 10px 10px 10px;
         }
 
         #commentUser {
             width: 10%;
+            padding: 10px 0 10px;
+            text-align: center;
         }
 
         #comment {
             width: 90%;
+        }
+
+        #commentBox {
+            width: 100%;
+            height: 90px;
+            resize: none;
+        }
+
+        #deleteComment {
+            float: right;
+            width: 10%;
         }
     </style>
     <body>
@@ -71,13 +92,20 @@
                 <a href = "/">Home</a>
                 <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
+                <a href = "/profile/<%= currentUser %>">Profile</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
         <table class = "imagePost">
             <tr>
-                <td>Poster: <%= post.username %></td><td id = "date">Date: <%= post.date %></td>
+                <td><b>Poster:</b> <a href = "/profile/<%= post.username %>"><%= post.username %></a></td>
+                <td id = "date">Date: <%= post.date %></td>
             </tr>
+            <% if (currentUser == post.username) { %>
+                <tr>
+                    <td colspan = "2" id = "deletePost"><a href = "/post/delete/<%= post._id %>">Delete</a></td>
+                </tr>
+            <% } %>
             <tr>
                 <td id = "imageData" colspan = "2"><img src = "data:image/jpeg; base64, <%= post.data %>" /></td>
             </tr>
@@ -96,7 +124,7 @@
             <% if (postComment && postComment.length > 0) {%>
                 <% for (var i = 0; i < postComment.length; i++) { %>
                     <tr>
-                        <td id = "commentUser"><%= postComment[i][0] %></td>
+                        <td id = "commentUser"><a href = "/profile/<%= postComment[i][0] %>"><%= postComment[i][0] %></a></td>
                         <td id = "comment"><%= postComment[i][1]%></td>
                     </tr>
                 <% }; %>
@@ -109,7 +137,7 @@
         <table class = "commentField">
             <tr>
                 <form method = "POST" action = "/comment">
-                    <textarea name = "commentText" required></textarea><br/>
+                    <textarea id = "commentBox" name = "commentText" required></textarea><br/>
                     <button type = "submit" name = "postComment" value = "comment">Comment</button>
                 </form>
             </tr>            

@@ -19,6 +19,7 @@ const fs = require('fs');
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
 
+
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 
@@ -85,15 +86,23 @@ app.post('/register', async (req, res) => {
     if (registerFail == true) {
         res.redirect('/register');
     } else {
-        userCollection.insertOne({username: req.body.name, password: req.body.password});
+        userCollection.insertOne({username: req.body.name, password: req.body.password, desc: ""});
         res.redirect('/login');
     }
 });
 
 
 /* profile */
-app.get('/profile', (req, res) => {
-    res.status(200).render('profile', {name: req.session.username});
+app.get('/profile/:username', async (req, res) => {
+    const user = await userCollection.find({username: req.params.username}).toArray();
+    const userPost = await postCollection.aggregate([{$match: {username: req.params.username}}, {$sort: {date: -1}}]).toArray(); // retrieve post by user from database
+    var postLike = null; // initiale value in case user has no posts
+    var postComment = null;
+    if (userPost.length > 0) { // check if user has post(s)
+        postLike = userPost[0].like; // retrieve like array from post
+        postComment = userPost[0].comment;
+    }
+    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0]});
 });
 
 
@@ -107,7 +116,7 @@ app.get('/post/:pID', async (req, res) => {
     req.session.postID = req.params.pID;
     const postLike = post[0].like;
     const postComment = post[0].comment;
-    res.status(200).render('post', {post: post[0], postLike: postLike, postComment: postComment});
+    res.status(200).render('post', {post: post[0], postLike: postLike, postComment: postComment, currentUser: req.session.username});
 });
 /* like */
 app.post('/like', async (req, res) => {
@@ -117,13 +126,13 @@ app.post('/like', async (req, res) => {
     } else {
         postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {like: req.session.username}});
     }
-    res.redirect('/');
+    res.redirect(`/post/${req.session.postID}`);
 });
 /* comment */
 app.post('/comment', async (req, res) => {
     const comment = [req.session.username, req.body.commentText];
     await postCollection.updateOne({_id: new ObjectId(req.session.postID)}, {$push: {comment: comment}});
-    res.redirect('/');
+    res.redirect(`/post/${req.session.postID}`);
 });
 
 
@@ -164,13 +173,27 @@ app.post('/create', (req, res) => {
 /* search */
 app.get('/search', async (req, res) => {
     const postList = await postCollection.find({}).toArray();
-    res.status(200).render('search', {postList: postList});
+    res.status(200).render('search', {postList: postList, name: req.session.username});
 });
-app.post('/search', async (req, res) => {
-    const postList = await postCollection.find({username: req.body.author}).toArray();
-    const searched = req.body.author;
-    res.status(200).render('search', {postList: postList});
+app.get('/search/:poster', async (req, res) => {
+    const postList = await postCollection.find({username: req.params.poster}).toArray();
+    res.status(200).render('search', {postList: postList, name: req.session.username});
 });
+app.post('/search', (req, res) => {
+    const searched = req.body.author
+    res.redirect(`/search/${searched}`);
+});
+
+
+/* Delete */
+app.get('/post/delete/:pID', (req, res) => {
+    postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err,result) => {
+        if(err) throw err
+        res.send('photo is deleted');
+    });
+    res.redirect('/search');
+});
+
 /* Other functions go here */
 
 app.listen(process.env.PORT || 8080);

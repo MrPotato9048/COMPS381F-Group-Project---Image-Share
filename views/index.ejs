@@ -10,6 +10,7 @@
                 <a href = "/">Home</a>
                 <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
+                <a href = "/profile/<%= name %>">Profile</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
@@ -38,7 +39,7 @@
                 <% if (postComment && postComment.length > 0) {%>
                     <% for (var i = 0; i < 2 && i < postComment.length; i++) { %>
                         <tr>
-                            <td id = "commentUser"><%= postComment[i][0] %></td>
+                            <td id = "commentUser"><a href = "/profile/<%= postComment[i][0] %>"><%= postComment[i][0] %></a></td>
                             <td id = "comment"><%= postComment[i][1]%></td>
                         </tr>
                     <% }; %>

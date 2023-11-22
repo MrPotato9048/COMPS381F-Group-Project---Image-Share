@@ -60,6 +60,7 @@
                 <a href = "/">Home</a>
                 <a href = "/create">Upload</a>
                 <a href = "/search">Search</a>
+                <a href = "/profile/<%= name %>">Profile</a>
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
@@ -67,18 +68,24 @@
             <form id = "searching" method = "POST" action = "/search">
                 <label name = "searchTitle">Search poster:</label>
                 <input type = "text" name = "author">
-                <input type = "submit" value = "search"><br>
+                <input type = "submit" value = "search">
             </form>
         </div>
         <div class = "searchContent">
-            <% for (var i = 0; i <= 4; i++) { %>
+            <% var i = 0; %>
+            <% while (postList.length > 0) { %>
                 <div class = "imageItem">
-                    <% if (postList.length > 0) { %>
-                        <% var post = postList.shift(); %>
-                        <a href = "/post/<%= post._id %>"><img src = "data:image/jpeg; base64, <%= post.data %>"  /></a>
-                    <% } %>
+                    <% var post = postList.shift(); %>
+                    <a href = "/post/<%= post._id %>">
+                        <img src = "data:image/jpeg;base64,<%= post.data %>" />
+                    </a>
                 </div>
+                <% i++; %>
+                <% if (i % 5 == 0) { %>
+                    </div>
+                    <div class = "searchContent">
+                <% } %>
             <% } %>
-        </div>        
+        </div>
     </body>
 </html>
