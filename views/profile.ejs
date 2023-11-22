@@ -96,7 +96,7 @@
             </div>
         </nav>
         <h2><%= user.username %>'s Profile</h2>
-        <% if (user.desc == null) { %>
+        <% if (user.desc == "") { %>
             <h3 id = "userDesc" style = "color:darkgray">I wonder who this person is...</h3>
         <% } else { %>
             <h3 id = "userDesc">"<%= user.desc %>"</h3>
