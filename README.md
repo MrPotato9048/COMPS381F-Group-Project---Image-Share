@@ -9,17 +9,20 @@ Names: Chan Tsz Yi (13434884)
        Rejul Rai (13347518)
 
 Use this link to run: https://localhost:8080
+
 ===========================================================================
 ## Login/logout
 Default users (username/password):
 - Developer: (developer/developer)
 - Guest: (guest/guest)
+
 ===========================================================================
 ## Register
 Register is available with the following constraints:
 - No space for username
 - Certain format requirement for password (at least 8 characters)
 - Password and re-entered password should be identical
+
 ===========================================================================
 ## Post
 A full page for viewing a post by a user.<br>
@@ -28,16 +31,19 @@ In default, the user developer has a post.<br>
 Function within a post:
 - Like
 - Posting a comment
+
 ===========================================================================
 ## Create/upload
 User can upload an image to the database.<br>
 There are multiple error handlings:
 - No files being upload
 - File failed to be uploaded to the database
+
 ===========================================================================
 ## Delete
 After login
 - They can delete their profile or delete specific photo 
+
 ===========================================================================
 # Restful
 In this project, there are four HTTP request types: post, get and delete.
@@ -59,10 +65,10 @@ In this project, there are four HTTP request types: post, get and delete.
 
 - Put (not finished)
     Put request is used for update.
-	Path URL for update user: 
+	Path URL for update user: /profile/<username>
 	Path URL for like post: /post/<postID>/like
 	Path URL for comment post: /post/<postID>/comment
-	Test (update user): 
+	Test (update user): curl -X PUT -H "Content-Type: application/json" --data '{"username": "<username>", "password": "<password>", "desc", "<desc>"}
 	Test (like): curl -X PUT -H "Content-Type: application/json" --data '{"like": "<username>"}' http://localhost:8080/post/<postID>/like
 	Test (comment): curl -X PUT -H "Content-Type: application/json" --data '{"comment": ["<username>", "<commentText>"]}' http://localhost:8080/post/<postID>/comment
 
@@ -70,5 +76,5 @@ In this project, there are four HTTP request types: post, get and delete.
 	Delete request is used for deletion.
     Path URL for delete user: /profile/<username>
 	Path URL for delete photo: /post/<postID>
-	Test (user): curl -X DELETE localhost:8080/profile/<username>
-    Test (photo): curl -X DELETE localhost:8080/post/<postID>
+	Test (user): curl -X DELETE http://localhost:8080/profile/<username>
+    Test (photo): curl -X DELETE http://localhost:8080/post/<postID>

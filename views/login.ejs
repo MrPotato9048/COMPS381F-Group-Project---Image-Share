@@ -7,6 +7,9 @@
         <div class = "container">
             <div id = "login">
                 <h2 text-align = "center">Login</h2>
+                <% if (msg) { %>
+                    <p style="color: red;"><%= msg %></p>
+                <% } %>
                 <form id = "loginForm" method = "POST" action = "/login">
                     <input type = "text" class = "loginInput" placeholder = "Enter your username" name = "name" required><br>
 

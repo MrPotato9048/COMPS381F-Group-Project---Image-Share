@@ -29,5 +29,11 @@
                 <br><br>
                 <input type="submit" value="Upload">
             </form>
+
+            <% if (photo) { %>
+                <h3>Uploaded Photo: </h3>
+                <p>Click the photo to view the full post.</p>
+                <a href = "/post/<%= photo._id %>"><img src = "data:image/jpeg;base64,<%= photo.data %>" width="300px"></a>
+            <% } %>
     </body>
 </html>

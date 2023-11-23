@@ -63,7 +63,7 @@ app.get('/', async (req, res) => {
 
 /* login/logout/register */
 app.get('/login', (req, res) => {
-    res.status(200).render('login', {});
+    res.status(200).render('login', {msg: ''});
 });
 app.post('/login', async (req, res) => {
     const userLogin = await userCollection.find({}).toArray();
@@ -73,6 +73,9 @@ app.post('/login', async (req, res) => {
             req.session.username = req.body.name;
         }
     });
+    if (!req.session.username) {
+        res.render('login', {msg: 'Wrong username or password!'});
+    }
     res.redirect('/');
 });
 app.get('/logout', (req, res) => {
@@ -80,18 +83,23 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
 });
 app.get('/register', (req, res) => {
-    res.status(200).render('register');
+    res.status(200).render('register', {msg: ''});
 });
 app.post('/register', async (req, res) => {
-    let registerFail = false;
+    let registerFailPassword = false;
+    let registerFailUsername = false;
     const userRegister = await userCollection.find({}).toArray();
     userRegister.forEach((user) => {
-        if (req.body.password != req.body.rePassword || user.username == req.body.name) {
-            registerFail = true;
+        if (req.body.password != req.body.rePassword) {
+            registerFailPassword = true;
+        } else if (user.username == req.body.name) {
+            registerFailUsername = true;
         }
     });
-    if (registerFail == true) {
-        res.redirect('/register');
+    if (registerFailPassword == true) {
+        return res.render('register', {msg: 'Password does not match!'});
+    } else if (registerFailUsername == true) {
+        return res.render('register', {msg: 'Username already exists!'});
     } else {
         userCollection.insertOne({username: req.body.name, password: req.body.password, desc: ""});
         res.redirect('/login');
@@ -109,22 +117,52 @@ app.get('/profile/:username', async (req, res) => {
         postLike = userPost[0].like; // retrieve like array from post
         postComment = userPost[0].comment;
     }
-    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0]});
+    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: ''});
 });
-/* edit profile (not finished) */
-app.get('/profile/:username/edit', (req, res) => {
-    res.status(200).render('editProfile', {name: req.session.username});
-});
-app.put('/profile/:usermame', async (req, res) => {
+/* edit profile */
+app.get('/profile/:username/edit', async (req, res) => {
     const user = await userCollection.find({username: req.params.username}).toArray();
-    res.redirect(`/profile/${req.session.username}`);
+    res.status(200).render('editProfile', {name: req.session.username, user: user[0], msg: '', changePasswordRequired: false});
+});
+app.get('/profile/:username/edit/changePassword', async (req, res) => {
+    const user = await userCollection.find({username: req.params.username}).toArray();
+    res.status(200).render('editProfile', {name: req.session.username, user: user[0], msg: '', changePasswordRequired: true});
+});
+app.put('/profile/:username', async (req, res) => {
+
+    // username/description change
+    if (req.body.formType == 'editProfile') {
+        await userCollection.updateOne({username: req.params.username}, {$set: {username: req.body.newUsername, desc: req.body.newDesc}});
+        req.sessionusername = req.body.newUsername;
+    } else if (req.body.formType == 'changePassword') {// password change
+        const userPasswordVerify = await userCollection.find({username: req.params.username}).toArray();
+        if (req.body.oldPassword != userPasswordVerify[0].password) { // check if old password is correct
+            return res.status(200).render('editProfile', {name: req.session.username, user: userPasswordVerify[0], msg: 'Old password is incorrect!', changePasswordRequired: true});
+        } else if (req.body.oldPassword == req.body.newPassword) { // check if old password = new password
+            return res.status(200).render('editProfile', {name: req.session.username, user: userPasswordVerify[0], msg: 'New password cannot be the same as old password!', changePasswordRequired: true});
+        } else if (req.body.newPassword != req.body.reNewPassword) { // check if new password = re-enter new password
+            return res.status(200).render('editProfile', {name: req.session.username, user: userPasswordVerify[0], msg: 'New password does not match!', changePasswordRequired: true});
+        } else { // update password
+            await userCollection.updateOne({username: req.params.username}, {$set: {password: req.body.newPassword}});
+        }
+    }
+
+    const user = await userCollection.find({username: req.params.username}).toArray();
+    const userPost = await postCollection.aggregate([{$match: {username: req.params.username}}, {$sort: {date: -1}}]).toArray(); // retrieve post by user from database
+    var postLike = null; // initiale value in case user has no posts
+    var postComment = null;
+    if (userPost.length > 0) { // check if user has post(s)
+        postLike = userPost[0].like; // retrieve like array from post
+        postComment = userPost[0].comment;
+    }
+    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: 'Account successfully updated!'});
 });
 /* delete profile */
 app.delete('/profile/:username', (req, res) => {
-    userCollection.deleteOne({username: req.params.username}, (err,result) => {
-        if(err) throw err
-        res.send('user is deleted');
-    });
+    userCollection.deleteOne({username: req.params.username});
+    postCollection.deleteMany({username: req.params.username});
+    postCollection.updateMany({}, {$pull: {like: req.params.username}});
+    postCollection.updateMany({}, {$pull: {comment: {$in: [req.params.username]}}}); // not finished
     res.redirect('/logout');
 });
 
@@ -156,7 +194,7 @@ app.put('/post/:pID/comment', async (req, res) => {
 });
 /* delete post */
 app.delete('/post/:pID', (req, res) => {
-    postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err,result) => {
+    postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err) => {
         if(err) throw err
         res.send('photo is deleted');
     });
@@ -167,35 +205,32 @@ app.delete('/post/:pID', (req, res) => {
 
 /* create */
 app.get('/create', (req, res) => {
-    res.render('create', { name: req.session.username, msg: '' });
-});
-    
-app.post('/create', (req, res) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        // No file selected
-        res.render('create', { name: req.session.username, msg: 'Error: No File Selected!' });
-    } else {
-        const photo = req.files.photo;
+    res.render('create', { name: req.session.username, msg: '', photo: null });
+}); 
+app.post('/create', async (req, res) => {
+    const photo = req.files.photo;
         
-        const photoData = {
-            username: req.session.username,
-            filename: photo.name,
-            size: photo.size,
-            date: new Date(),
-            data: new Buffer.from(photo.data).toString('base64'),
-            like: [],
-            comment: []
-        };
+    const photoData = {
+        username: req.session.username,
+        filename: photo.name,
+        size: photo.size,
+        date: new Date(),
+        data: new Buffer.from(photo.data).toString('base64'),
+        like: [],
+        comment: []
+    };
 
-        postCollection.insertOne(photoData, (err, result) => {
-            if (err) {
-                console.log(err);
-                res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!' });
-            } else {
-                res.redirect('/search');
-            }
-        });
-    }
+    postCollection.insertOne(photoData)
+    .then(() => {
+        return postCollection.find({username: req.session.username, filename: photo.name}).toArray();
+    })
+    .then((uploadedPhoto) => {
+        res.render('create', { name: req.session.username, msg: 'Photo was uploaded successfully!', photo: uploadedPhoto[0] });
+    })
+    .catch((err) => {
+        console.log(err);
+        res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!', photo: null });
+    });
 });
 
 

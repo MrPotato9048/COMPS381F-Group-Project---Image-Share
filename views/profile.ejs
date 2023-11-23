@@ -95,6 +95,9 @@
                 <a href = "/logout" style = "float: right">Logout</a>
             </div>
         </nav>
+        <% if (msg) { %>
+            <p style="color: green;"><%= msg %></p>
+        <% } %>
         <h2><%= user.username %>'s Profile</h2>
         <% if (user.desc == "") { %>
             <h3 id = "userDesc" style = "color:darkgray">I wonder who this person is...</h3>

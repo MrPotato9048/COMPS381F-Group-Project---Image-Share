@@ -83,6 +83,37 @@
             font-style: italic;
             font-weight: bold;
         }
+
+        .editButton {
+            background-color: #515671;
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            color: white;
+            cursor: pointer;
+            margin: 15px auto 15px;
+            padding: 10px 20px;
+            transition: background-color 600ms;
+        }
+
+        .editButton:hover {
+            background-color: #717691;
+        }
+
+        .editInput {
+            display: block;
+            margin: 12px;
+            padding: 9px 18px;
+            border-radius: 3px;
+            border: 1px solid lightgrey;
+            transition: border-color 150ms, box-shadow 150ms;
+        }
+
+        .editInput:focus {
+            outline: none;
+            border-color: lightskyblue;
+            box-shadow: 0 0 0 3px lightblue;
+        }
     </style>
     <body>
         <h1>Image Share</h1>
@@ -96,10 +127,35 @@
             </div>
         </nav>
         <h2>Edit profile</h2>
-        <form method = "POST" action = "/profile/<%= name %>">
-            
-        </form>
+        <% if (msg) { %>
+            <p style="color: red;"><%= msg %></p>
+        <% } %>
+        <% if (changePasswordRequired == false) { %> 
+            <a href = "/profile/<%= name %>/edit/changePassword">Change password</a>
+            <form method = "POST" action = "/profile/<%= name %>?method=PUT">
+                <input type = "hidden" name = "formType" value = "editProfile">
+                
+                <input type = "text" class = "editInput" placeholder = "Edit your username" value = "<%= user.username %>" name = "newUsername" required title = "No space" pattern = "^\S+$"><br>
+
+                <input type = "text" class = "editInput" placeholder = "Edit your description" value = "<%= user.desc %>" name = "newDesc"><br>
+
+                <button type = "submit" class = "editButton">Edit account</button><br>
+            </form>
+        <% } else if (changePasswordRequired == true) { %>
+            <form method = "POST" action = "/profile/<%= name %>?method=PUT">
+                <input type = "hidden" name = "formType" value = "changePassword">
+
+                <input type = "password" class = "editInput" placeholder = "Enter your old password" name = "oldPassword" required><br>
+
+                <input type = "password" class = "editInput" placeholder = "Enter your new password" name = "newPassword" required title = "At least 8 characters" pattern = ".{8,}"><br>
+
+                <input type = "password" class = "editInput" placeholder = "Re-enter your new password" name = "reNewPassword" required><br>
+
+                <button type = "submit" class = "editButton">Change password</button><br>
+            </form>
+        <% } %>
         <form method = "POST" action = "/profile/<%= name %>?method=DELETE">
+            <h3 style = "color: red; font-weight: bold">This action cannot be reversed and all related data will be removed. Please think twice.</h3>
             <button type = "submit">Delete</button>
         </form>
     </body>
