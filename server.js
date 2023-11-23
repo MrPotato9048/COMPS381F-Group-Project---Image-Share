@@ -100,8 +100,11 @@ app.post('/register', async (req, res) => {
         return res.render('register', {msg: 'Password does not match!'});
     } else if (registerFailUsername == true) {
         return res.render('register', {msg: 'Username already exists!'});
+    }
+    userCollection.insertOne({username: req.body.name, password: req.body.password, desc: ""});
+    if (req.headers['accept'] == 'application/json') {
+        res.status(201).json({msg: 'Account successfully created!'});
     } else {
-        userCollection.insertOne({username: req.body.name, password: req.body.password, desc: ""});
         res.redirect('/login');
     }
 });
@@ -117,7 +120,11 @@ app.get('/profile/:username', async (req, res) => {
         postLike = userPost[0].like; // retrieve like array from post
         postComment = userPost[0].comment;
     }
-    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: ''});
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({user: user[0]});
+    } else {
+        res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: ''});
+    }
 });
 /* edit profile */
 app.get('/profile/:username/edit', async (req, res) => {
@@ -155,7 +162,11 @@ app.put('/profile/:username', async (req, res) => {
         postLike = userPost[0].like; // retrieve like array from post
         postComment = userPost[0].comment;
     }
-    res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: 'Account successfully updated!'});
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({ msg: 'Account successfully updated!', user: user[0]});
+    } else {
+        res.status(200).render('profile', {name: req.session.username, userPost: userPost[0], postLike: postLike, postComment: postComment, user: user[0], msg: 'Account successfully updated!'});
+    }
 });
 /* delete profile */
 app.delete('/profile/:username', (req, res) => {
@@ -163,7 +174,11 @@ app.delete('/profile/:username', (req, res) => {
     postCollection.deleteMany({username: req.params.username});
     postCollection.updateMany({}, {$pull: {like: req.params.username}});
     postCollection.updateMany({}, {$pull: {comment: {$in: [req.params.username]}}}); // not finished
-    res.redirect('/logout');
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({msg: 'Account successfully deleted'});
+    } else {
+        res.redirect('/logout');
+    }
 });
 
 
@@ -174,15 +189,27 @@ app.get('/post/:pID', async (req, res) => {
         res.status(404).send('Post not found');
         return;
     }
-    res.status(200).render('post', {post: post[0], postLike: post[0].like, postComment: post[0].comment, currentUser: req.session.username});
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({post: post[0]});
+    } else {
+        res.status(200).render('post', {post: post[0], postLike: post[0].like, postComment: post[0].comment, currentUser: req.session.username});
+    }
 });
 /* like */
 app.put('/post/:pID/like', async (req, res) => {
     const likePost = await postCollection.findOne({_id: new ObjectId(req.params.pID)});
     if (likePost.like.includes(req.session.username)) {
-        postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$pull: {like: req.session.username}}); // not sure why not working properly
+        if (req.headers['accept'] == 'application/json') {
+            res.status(200).json({msg: 'You disliked this post'});
+        } else {
+            postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$pull: {like: req.session.username}});
+        }
     } else {
-        postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$push: {like: req.session.username}});
+        if (req.headers['accept'] == 'application/json') {
+            res.status(200).json({msg: 'You liked this post'});
+        } else {
+            postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$push: {like: req.session.username}});
+        }
     }
     res.redirect(`/post/${req.params.pID}`);
 });
@@ -190,15 +217,22 @@ app.put('/post/:pID/like', async (req, res) => {
 app.put('/post/:pID/comment', async (req, res) => {
     const comment = [req.session.username, req.body.commentText];
     await postCollection.updateOne({_id: new ObjectId(req.params.pID)}, {$push: {comment: comment}});
-    res.redirect(`/post/${req.params.pID}`);
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({msg: 'Comment successfully added'});
+    } else {
+        res.redirect(`/post/${req.params.pID}`);
+    }
 });
 /* delete post */
 app.delete('/post/:pID', (req, res) => {
     postCollection.deleteOne({_id: new ObjectId(req.params.pID)}, (err) => {
         if(err) throw err
-        res.send('photo is deleted');
     });
-    res.redirect('/search');
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({msg: 'Post successfully deleted'});
+    } else {
+        res.redirect('/search');
+    }
 });
 
 
@@ -206,7 +240,8 @@ app.delete('/post/:pID', (req, res) => {
 /* create */
 app.get('/create', (req, res) => {
     res.render('create', { name: req.session.username, msg: '', photo: null });
-}); 
+});
+
 app.post('/create', async (req, res) => {
     const photo = req.files.photo;
         
@@ -221,16 +256,31 @@ app.post('/create', async (req, res) => {
     };
 
     postCollection.insertOne(photoData)
-    .then(() => {
-        return postCollection.find({username: req.session.username, filename: photo.name}).toArray();
-    })
-    .then((uploadedPhoto) => {
-        res.render('create', { name: req.session.username, msg: 'Photo was uploaded successfully!', photo: uploadedPhoto[0] });
-    })
-    .catch((err) => {
-        console.log(err);
-        res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!', photo: null });
-    });
+        .then(() => {
+            return postCollection.find({username: req.session.username, filename: photo.name}).toArray();
+        })
+        .then((uploadedPhoto) => {
+            if (req.headers['accept'] == 'application/json') {
+                
+                res.status(201).json({
+                    message: 'Photo uploaded successfully!',
+                    photo: uploadedPhoto[0]
+                });
+            } else {
+                res.status(200).render('create', { name: req.session.username, msg: 'Photo uploaded successfully!', photo: uploadedPhoto[0] });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+            if (req.headers['accept'] == 'application/json') {
+                res.status(500).json({
+                message: 'Error: Failed to upload photo to the database!',
+                photo: null 
+            });
+            } else {
+                res.render('create', { name: req.session.username, msg: 'Error: Failed to upload photo to the database!', photo: null });
+            }
+        });
 });
 
 
@@ -241,7 +291,11 @@ app.get('/search', async (req, res) => {
 });
 app.get('/search/:poster', async (req, res) => {
     const postList = await postCollection.find({username: req.params.poster}).toArray();
-    res.status(200).render('search', {postList: postList, name: req.session.username});
+    if (req.headers['accept'] == 'application/json') {
+        res.status(200).json({postList: postList});
+    } else {
+        res.status(200).render('search', {postList: postList, name: req.session.username});
+    }
 });
 app.post('/search', (req, res) => {
     const searched = req.body.author
