@@ -9,7 +9,8 @@ Ting Kenneth Charles (13338614)<br>
 Raja Arbab Mahmood (13275291)<br>
 Rejul Rai (13347518)<br><br>
 
-Use this link to run: https://localhost:8080
+The server is configured to list on port 8080.<br>
+To run the server locally: https://localhost:8080
 
 ===========================================================================
 ## Login/logout
@@ -40,6 +41,9 @@ There are multiple error handlings:
 - No files being upload
 - File failed to be uploaded to the database
 
+After successful upload, a preview of the uploaded image will be rendered in the create page<br>
+User can be redirected to the relevant image post upon clicking the preview image.
+
 ===========================================================================
 ## Profile
 User can view own and others' profiles<br>
@@ -48,7 +52,9 @@ User can edit one's username, description, and password.
 ===========================================================================
 ## Delete
 After login
-- They can delete their profile or delete specific photo 
+- They can delete their profile or delete specific photo
+
+Upon deleting an account, all data relevant to the specific account will be removed from the database.
 
 ===========================================================================
 # Restful
