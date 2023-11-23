@@ -64,7 +64,7 @@ In this project, there are four HTTP request types: post, get , put, and delete.
   - Post request is used for creating/adding.
     - Path URL for creating post: /create
     - Path URL for creating account/register: /register
-    - Test (creating post): curl -X POST -H "accept: application/json" --data '{"photo": "<photo>", "username": "<username>", "filename": "<filename>", "size": "<size>", "date": "<date>", "data": "<data>", "like": [], "comment": []}' http://<hostname>:<port>/create
+    - Test (creating post): curl -X POST -H "accept: application/json" --data '{"photo": "<photo>", "username": "<username>", "filename": "<filename>", "size": "<size>", "date": "<date>", "data": "<data>", "like": [], "comment": []}' http://localhost:8080/create
     - Test (register): curl -X POST -H "accept: application/json" -data '{"name":"username", "password":"password", "rePassword":"password"}' http://localhost:8080/register
 
 - Get
