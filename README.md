@@ -46,7 +46,7 @@ After login
 
 ===========================================================================
 # Restful
-In this project, there are four HTTP request types: post, get and delete.
+In this project, there are four HTTP request types: post, get , put, and delete.
 
 - Post 
 	Post request is used for creating/adding.
