@@ -64,30 +64,30 @@ In this project, there are four HTTP request types: post, get , put, and delete.
   - Post request is used for creating/adding.
     - Path URL for creating post: /create
     - Path URL for creating account/register: /register
-    - Test (creating post): curl -X POST -H "accept: application/json" --data '{"photo": "<photo>", "username": "<username>", "filename": "<filename>", "size": "<size>", "date": "<date>", "data": "<data>", "like": [], "comment": []}' http://localhost:8080/create
-    - Test (register): curl -X POST -H "accept: application/json" --data '{"username":"<username>", "password":"<password>", "desc":"<password>"}' http://localhost:8080/register
+    - Test (creating post): `curl -X POST -H "accept: application/json" --data '{"photo": "<photo>", "username": "<username>", "filename": "<filename>", "size": "<size>", "date": "<date>", "data": "<data>", "like": [], "comment": []}' http://localhost:8080/create`
+    - Test (register): `curl -X POST -H "accept: application/json" --data '{"username":"<username>", "password":"<password>", "desc":"<password>"}' http://localhost:8080/register`
 
 - Get
   - Get request is used for find.
     - Path URL for images list from certain poster: /search/<username>
     - Path URL for a certain image: /post/<postID>
     -Path URL for a certain poster's profile: /profile/<usermame>
-    - Test (images list from poster): curl -X GET "accept: application/json" http://localhost:8080/search/<username>
-    - Test (image): curl -X GET -H "accept: application/json" http://localhost:8080/post/<postID>
-    - Test (profile): curl -X GET -H "accept: application/json" http://localhost:8080/profile/<username>
+    - Test (images list from poster): `curl -X GET "accept: application/json" http://localhost:8080/search/<username>`
+    - Test (image): `curl -X GET -H "accept: application/json" http://localhost:8080/post/<postID>`
+    - Test (profile): `curl -X GET -H "accept: application/json" http://localhost:8080/profile/<username>`
 
 - Put
   - Put request is used for update.
     - Path URL for update user: /profile/<username>
     - Path URL for like post: /post/<postID>/like
     - Path URL for comment post: /post/<postID>/comment
-    - Test (update user): curl -X PUT -H "accept: application/json" --data '{"username": "<username>", "password": "<password>", "desc", "<desc>"}' http://localhost:8080/profile/<username>
-    - Test (like): curl -X PUT -H "accept: application/json" --data '{"like": "<username>"}' http://localhost:8080/post/<postID>/like
-    - Test (comment): curl -X PUT -H "accept: application/json" --data '{"comment": ["<username>", "<commentText>"]}' http://localhost:8080/post/<postID>/comment
+    - Test (update user): `curl -X PUT -H "accept: application/json" --data '{"username": "<username>", "password": "<password>", "desc", "<desc>"}' http://localhost:8080/profile/<username>`
+    - Test (like): `curl -X PUT -H "accept: application/json" --data '{"like": "<username>"}' http://localhost:8080/post/<postID>/like`
+    - Test (comment): `curl -X PUT -H "accept: application/json" --data '{"comment": ["<username>", "<commentText>"]}' http://localhost:8080/post/<postID>/comment`
 
 - Delete
   - Delete request is used for deletion.
     - Path URL for delete user: /profile/<username>
     - Path URL for delete photo: /post/<postID>
-    - Test (user): curl -X DELETE -H "accept: application/json" http://localhost:8080/profile/<username>
-    - Test (photo): curl -X DELETE -H "accept: application/json" http://localhost:8080/post/<postID>
+    - Test (user): `curl -X DELETE -H "accept: application/json" http://localhost:8080/profile/<username>`
+    - Test (photo): `curl -X DELETE -H "accept: application/json" http://localhost:8080/post/<postID>`
