@@ -2,11 +2,12 @@
 
 Description: Server-side app for sharing image with the implementation of MongoDB.<br>
 
-Group:25
-Names: Chan Tsz Yi (13434884)
-	   Ting Kenneth Charles (13338614)      
-       Raja Arbab Mahmood (13275291)
-       Rejul Rai (13347518)
+Group: 25<br>
+Names:<br>
+Chan Tsz Yi (13434884)<br>
+Ting Kenneth Charles (13338614)<br>
+Raja Arbab Mahmood (13275291)<br>
+Rejul Rai (13347518)<br><br>
 
 Use this link to run: https://localhost:8080
 
@@ -40,6 +41,11 @@ There are multiple error handlings:
 - File failed to be uploaded to the database
 
 ===========================================================================
+## Profile
+User can view own and others' profiles<br>
+User can edit one's username, description, and password.
+
+===========================================================================
 ## Delete
 After login
 - They can delete their profile or delete specific photo 
@@ -48,33 +54,33 @@ After login
 # Restful
 In this project, there are four HTTP request types: post, get , put, and delete.
 
-- Post 
-	Post request is used for creating/adding.
-	Path URL for login: /login
-	Path URL for register: /register
-	Test (register): curl -X POST -H "Content-Type: application/json" --data '{"username": <username>, "password":<password>}'localhost:8080/register
+- Post
+  - Post request is used for creating/adding.
+    - Path URL for login: /login
+    - Path URL for register: /register
+    - Test (register): curl -X POST -H "Content-Type: application/json" --data '{"username": <username>, "password":<password>}'localhost:8080/register
 
 - Get
-	Get request is used for find.
-	Path URL for images list from certain poster: /search/<username>
-	Path URL for a certain image: /post/<postID>
-	Path URL for a certain poster's profile: /profile/<usermame>
-	Test (images list from poster): curl -X GET http://localhost:8080/search/<username>
-	Test (image): curl -X GET http://localhost:8080/post/<postID>
-	Test (profile): curl -X GET http://localhost:8080/profile/<username>
+  - Get request is used for find.
+    - Path URL for images list from certain poster: /search/<username>
+    - Path URL for a certain image: /post/<postID>
+    -Path URL for a certain poster's profile: /profile/<usermame>
+    - Test (images list from poster): curl -X GET http://localhost:8080/search/<username>
+    - Test (image): curl -X GET http://localhost:8080/post/<postID>
+    - Test (profile): curl -X GET http://localhost:8080/profile/<username>
 
 - Put (not finished)
-    Put request is used for update.
-	Path URL for update user: /profile/<username>
-	Path URL for like post: /post/<postID>/like
-	Path URL for comment post: /post/<postID>/comment
-	Test (update user): curl -X PUT -H "Content-Type: application/json" --data '{"username": "<username>", "password": "<password>", "desc", "<desc>"}
-	Test (like): curl -X PUT -H "Content-Type: application/json" --data '{"like": "<username>"}' http://localhost:8080/post/<postID>/like
-	Test (comment): curl -X PUT -H "Content-Type: application/json" --data '{"comment": ["<username>", "<commentText>"]}' http://localhost:8080/post/<postID>/comment
+  - Put request is used for update.
+    - Path URL for update user: /profile/<username>
+    - Path URL for like post: /post/<postID>/like
+    - Path URL for comment post: /post/<postID>/comment
+    - Test (update user): curl -X PUT -H "Content-Type: application/json" --data '{"username": "<username>", "password": "<password>", "desc", "<desc>"}
+    - Test (like): curl -X PUT -H "Content-Type: application/json" --data '{"like": "<username>"}' http://localhost:8080/post/<postID>/like
+    - Test (comment): curl -X PUT -H "Content-Type: application/json" --data '{"comment": ["<username>", "<commentText>"]}' http://localhost:8080/post/<postID>/comment
 
 - Delete
-	Delete request is used for deletion.
-    Path URL for delete user: /profile/<username>
-	Path URL for delete photo: /post/<postID>
-	Test (user): curl -X DELETE http://localhost:8080/profile/<username>
-    Test (photo): curl -X DELETE http://localhost:8080/post/<postID>
+  - Delete request is used for deletion.
+    - Path URL for delete user: /profile/<username>
+    - Path URL for delete photo: /post/<postID>
+    - Test (user): curl -X DELETE http://localhost:8080/profile/<username>
+    - Test (photo): curl -X DELETE http://localhost:8080/post/<postID>
